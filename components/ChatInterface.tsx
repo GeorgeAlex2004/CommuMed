@@ -78,7 +78,7 @@ export default function ChatInterface() {
             </h3>
             <p className="text-gray-600 dark:text-gray-300 max-w-lg mb-6 sm:mb-8 text-base sm:text-lg px-4">
               Ask me anything about diseases, symptoms, or medical information from your textbook.
-              I'll provide answers based <strong>only</strong> on Park Textbook of Preventive and Social Medicine.
+              I&apos;ll provide answers based <strong>only</strong> on Park Textbook of Preventive and Social Medicine.
             </p>
             <div className="space-y-3 w-full max-w-2xl px-4">
               <p className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
