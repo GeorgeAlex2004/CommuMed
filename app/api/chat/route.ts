@@ -351,28 +351,44 @@ IMPORTANT: Your response must be based EXCLUSIVELY on the documentation above. E
   } catch (error) {
     console.error('Error in chat API:', error);
     
-    // Check if it's a connection error
-    const provider = (process.env.LLM_PROVIDER || 'huggingface').toLowerCase();
-    if (error instanceof Error && (error.message.includes('ECONNREFUSED') || error.message.includes('fetch failed'))) {
-      const errorMsg = provider === 'huggingface'
-        ? 'Cannot connect to Hugging Face API. Please check your HUGGINGFACE_API_KEY and network connection.'
-        : 'Cannot connect to Ollama. Please ensure Ollama is running and accessible at ' + (process.env.OLLAMA_BASE_URL || 'http://localhost:11434');
+    // Provide more detailed error messages
+    let errorMessage = 'Failed to generate response. Please try again.';
+    let statusCode = 500;
+    
+    if (error instanceof Error) {
+      const errorMsg = error.message.toLowerCase();
       
-      return new Response(
-        JSON.stringify({ error: errorMsg }),
-        {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' },
+      // Connection errors
+      if (errorMsg.includes('econnrefused') || errorMsg.includes('fetch failed') || errorMsg.includes('network')) {
+        const provider = (process.env.LLM_PROVIDER || 'huggingface').toLowerCase();
+        if (provider === 'huggingface') {
+          errorMessage = `Cannot connect to Hugging Face Space. Please check:
+1. HUGGINGFACE_SPACE_URL is set correctly: ${process.env.HUGGINGFACE_SPACE_URL || 'NOT SET'}
+2. Space is running at: https://unwonted-uplift-commumed-llm.hf.space
+3. First request may take 30-60 seconds (model loading)`;
+        } else {
+          errorMessage = `Cannot connect to Ollama at ${process.env.OLLAMA_BASE_URL || 'http://localhost:11434'}`;
         }
-      );
+      }
+      // Embedding errors
+      else if (errorMsg.includes('embedding') {
+        errorMessage = `Error generating embedding: ${error.message}. Check HUGGINGFACE_SPACE_URL and model configuration.`;
+      }
+      // Embeddings loading errors
+      else if (errorMsg.includes('embeddings') || errorMsg.includes('not found')) {
+        errorMessage = `Embeddings not found. Check EMBEDDINGS_URL: ${process.env.EMBEDDINGS_URL || 'NOT SET'}`;
+        statusCode = 400;
+      }
+      // Other errors
+      else {
+        errorMessage = `Error: ${error.message}`;
+      }
     }
-
+    
     return new Response(
-      JSON.stringify({
-        error: 'Failed to generate response. Please try again.',
-      }),
+      JSON.stringify({ error: errorMessage }),
       {
-        status: 500,
+        status: statusCode,
         headers: { 'Content-Type': 'application/json' },
       }
     );
