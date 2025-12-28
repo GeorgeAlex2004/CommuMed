@@ -61,15 +61,23 @@ export async function generateEmbedding(
 
   // Fallback to Inference API (using new router endpoint)
   try {
+    // For sentence-transformers models, use 'sentences' parameter
+    // For feature extraction models, use 'inputs' parameter
+    const isSentenceTransformer = model.includes('sentence-transformers') || 
+                                   model.includes('all-MiniLM') ||
+                                   model.includes('paraphrase');
+    
+    const requestBody = isSentenceTransformer
+      ? { sentences: [text] }  // Sentence similarity models expect 'sentences'
+      : { inputs: text };        // Feature extraction models expect 'inputs'
+    
     const response = await fetch(`${DEFAULT_INFERENCE_URL}/models/${model}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...(apiKey && { 'Authorization': `Bearer ${apiKey}` }),
       },
-      body: JSON.stringify({
-        inputs: text,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
@@ -79,19 +87,29 @@ export async function generateEmbedding(
 
     const data = await response.json();
     
+    // Handle sentence-transformers response format
+    // Response can be: [[0.1, 0.2, ...]] or { embeddings: [[0.1, 0.2, ...]] }
     if (Array.isArray(data)) {
-      return data[0] || data;
-    }
-    
-    if (data.embeddings) {
-      return Array.isArray(data.embeddings[0]) ? data.embeddings[0] : data.embeddings;
-    }
-    
-    if (Array.isArray(data)) {
+      // If it's an array of arrays, return the first array
+      if (Array.isArray(data[0])) {
+        return data[0];
+      }
+      // If it's a flat array, return it
       return data;
     }
+    
+    // Handle object response
+    if (data.embeddings) {
+      const embeddings = Array.isArray(data.embeddings) ? data.embeddings : [data.embeddings];
+      return Array.isArray(embeddings[0]) ? embeddings[0] : embeddings;
+    }
+    
+    // Handle direct embedding array in object
+    if (data.embedding && Array.isArray(data.embedding)) {
+      return data.embedding;
+    }
 
-    throw new Error('Unexpected response format from Hugging Face');
+    throw new Error(`Unexpected response format from Hugging Face: ${JSON.stringify(data).substring(0, 200)}`);
   } catch (error) {
     console.error('Error generating embedding with Hugging Face:', error);
     throw error;
