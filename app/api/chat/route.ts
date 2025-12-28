@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
         const { generateEmbedding: hfGenerateEmbedding } = await import('@/lib/huggingface-provider');
         queryEmbedding = await hfGenerateEmbedding(
           query.trim(),
-          process.env.HUGGINGFACE_EMBEDDING_MODEL || 'sentence-transformers/all-MiniLM-L6-v2',
+          process.env.HUGGINGFACE_EMBEDDING_MODEL || 'intfloat/e5-small-v2',
           {
             spaceURL: process.env.HUGGINGFACE_SPACE_URL,
             apiKey: process.env.HUGGINGFACE_API_KEY,
