@@ -8,7 +8,9 @@ export interface HuggingFaceConfig {
 
 // Default to Space API, fallback to Inference API
 const DEFAULT_SPACE_URL = process.env.HUGGINGFACE_SPACE_URL || '';
-const DEFAULT_INFERENCE_URL = 'https://router.huggingface.co/hf-inference';
+// Use direct model endpoint for sentence-transformers, router for others
+const DEFAULT_INFERENCE_URL = 'https://api-inference.huggingface.co';
+const ROUTER_INFERENCE_URL = 'https://router.huggingface.co/hf-inference';
 
 // Generate embeddings using Hugging Face Space API or Inference API
 export async function generateEmbedding(
@@ -59,21 +61,32 @@ export async function generateEmbedding(
     }
   }
 
-  // Fallback to Inference API (using new router endpoint)
+  // Fallback to Inference API
+  // For sentence-transformers models, use direct endpoint with 'sentences' parameter
+  // For other models, use router endpoint with 'inputs' parameter
   try {
-    // Router endpoint always requires 'inputs' key
-    // For sentence-transformers models, inputs should be an array of strings
-    // For feature extraction models, inputs can be a string or array
     const isSentenceTransformer = model.includes('sentence-transformers') || 
                                    model.includes('all-MiniLM') ||
                                    model.includes('paraphrase');
     
-    // Router endpoint requires 'inputs' key, but value format depends on model
-    const requestBody = {
-      inputs: isSentenceTransformer ? [text] : text
-    };
+    let apiUrl: string;
+    let requestBody: any;
     
-    const response = await fetch(`${DEFAULT_INFERENCE_URL}/models/${model}`, {
+    if (isSentenceTransformer) {
+      // Use direct endpoint for sentence-transformers (still works despite deprecation warning)
+      apiUrl = `${DEFAULT_INFERENCE_URL}/models/${model}`;
+      requestBody = {
+        sentences: [text]  // Sentence-transformers models need 'sentences' key
+      };
+    } else {
+      // Use router endpoint for other models
+      apiUrl = `${ROUTER_INFERENCE_URL}/models/${model}`;
+      requestBody = {
+        inputs: text  // Feature extraction models use 'inputs' key
+      };
+    }
+    
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
