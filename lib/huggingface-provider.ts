@@ -8,8 +8,7 @@ export interface HuggingFaceConfig {
 
 // Default to Space API, fallback to Inference API
 const DEFAULT_SPACE_URL = process.env.HUGGINGFACE_SPACE_URL || '';
-// Use direct model endpoint for sentence-transformers, router for others
-const DEFAULT_INFERENCE_URL = 'https://api-inference.huggingface.co';
+// Router endpoint (direct endpoint is deprecated)
 const ROUTER_INFERENCE_URL = 'https://router.huggingface.co/hf-inference';
 
 // Generate embeddings using Hugging Face Space API or Inference API
@@ -61,30 +60,19 @@ export async function generateEmbedding(
     }
   }
 
-  // Fallback to Inference API
-  // For sentence-transformers models, use direct endpoint with 'sentences' parameter
-  // For other models, use router endpoint with 'inputs' parameter
+  // Fallback to Inference API (router endpoint only - direct endpoint is deprecated)
+  // Router endpoint requires 'inputs' key for all models
+  // For sentence-transformers, try using feature extraction format
   try {
-    const isSentenceTransformer = model.includes('sentence-transformers') || 
-                                   model.includes('all-MiniLM') ||
-                                   model.includes('paraphrase');
+    // Use router endpoint for all models
+    // Try feature extraction format: inputs as string or array
+    const apiUrl = `${ROUTER_INFERENCE_URL}/models/${model}`;
     
-    let apiUrl: string;
-    let requestBody: any;
-    
-    if (isSentenceTransformer) {
-      // Use direct endpoint for sentence-transformers (still works despite deprecation warning)
-      apiUrl = `${DEFAULT_INFERENCE_URL}/models/${model}`;
-      requestBody = {
-        sentences: [text]  // Sentence-transformers models need 'sentences' key
-      };
-    } else {
-      // Use router endpoint for other models
-      apiUrl = `${ROUTER_INFERENCE_URL}/models/${model}`;
-      requestBody = {
-        inputs: text  // Feature extraction models use 'inputs' key
-      };
-    }
+    // Try array format first (works for some sentence-transformers models)
+    // If that fails, we'll need to use a different model
+    const requestBody = {
+      inputs: [text]  // Array format for feature extraction
+    };
     
     const response = await fetch(apiUrl, {
       method: 'POST',
