@@ -8,7 +8,7 @@ export interface HuggingFaceConfig {
 
 // Default to Space API, fallback to Inference API
 const DEFAULT_SPACE_URL = process.env.HUGGINGFACE_SPACE_URL || '';
-const DEFAULT_INFERENCE_URL = 'https://router.huggingface.co';
+const DEFAULT_INFERENCE_URL = 'https://router.huggingface.co/hf-inference';
 
 // Generate embeddings using Hugging Face Space API or Inference API
 export async function generateEmbedding(
