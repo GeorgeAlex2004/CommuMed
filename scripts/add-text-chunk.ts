@@ -101,8 +101,11 @@ async function processTextChunk(chunkName: string, text: string, startPage: numb
     try {
       const embedding = await generateEmbedding(
         chunk.text,
-        OLLAMA_BASE_URL,
-        EMBEDDING_MODEL
+        'ollama',
+        {
+          baseURL: OLLAMA_BASE_URL,
+          model: EMBEDDING_MODEL,
+        }
       );
       
       if (embedding.length > 0) {
