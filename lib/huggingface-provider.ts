@@ -23,8 +23,8 @@ export async function generateEmbedding(
   if (spaceURL) {
     try {
       const spaceApiUrl = spaceURL.endsWith('/') 
-        ? `${spaceURL}api/predict` 
-        : `${spaceURL}/api/predict`;
+        ? `${spaceURL}run/predict` 
+        : `${spaceURL}/run/predict`;
       
       const response = await fetch(spaceApiUrl, {
         method: 'POST',
@@ -118,8 +118,8 @@ export async function* streamChatResponse(
   if (spaceURL) {
     try {
       const spaceApiUrl = spaceURL.endsWith('/') 
-        ? `${spaceURL}api/predict` 
-        : `${spaceURL}/api/predict`;
+        ? `${spaceURL}run/predict` 
+        : `${spaceURL}/run/predict`;
       
       const response = await fetch(spaceApiUrl, {
         method: 'POST',
