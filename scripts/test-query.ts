@@ -77,10 +77,16 @@ async function askQuestion(query: string): Promise<void> {
   console.log('🔄 Generating query embedding...');
   let queryEmbedding: number[];
   try {
-    queryEmbedding = await generateEmbedding(query.trim(), ollamaBaseUrl, embeddingModel);
+    queryEmbedding = await generateEmbedding(query.trim(), 'ollama', {
+      baseURL: ollamaBaseUrl,
+      model: embeddingModel,
+    });
   } catch (error) {
     console.error('⚠️  Error with embedding model, trying fallback...');
-    queryEmbedding = await generateEmbedding(query.trim(), ollamaBaseUrl, 'llama3.2');
+      queryEmbedding = await generateEmbedding(query.trim(), 'ollama', {
+        baseURL: ollamaBaseUrl,
+        model: 'llama3.2',
+      });
   }
 
   // Search for relevant chunks

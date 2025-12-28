@@ -64,8 +64,11 @@ async function processDocumentation(pdfPath: string): Promise<void> {
     try {
       const embedding = await generateEmbedding(
         chunk.text,
-        OLLAMA_BASE_URL,
-        EMBEDDING_MODEL
+        'ollama',
+        {
+          baseURL: OLLAMA_BASE_URL,
+          model: EMBEDDING_MODEL,
+        }
       );
       
       if (embedding.length > 0) {
@@ -123,7 +126,10 @@ async function main() {
   
   // Check if embedding model is available
   try {
-    await generateEmbedding('test', OLLAMA_BASE_URL, EMBEDDING_MODEL);
+    await generateEmbedding('test', 'ollama', {
+      baseURL: OLLAMA_BASE_URL,
+      model: EMBEDDING_MODEL,
+    });
   } catch (error) {
     console.error(`❌ Embedding model "${EMBEDDING_MODEL}" not available`);
     console.error(`   Pull the model with: ollama pull ${EMBEDDING_MODEL}`);
