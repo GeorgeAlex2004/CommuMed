@@ -1,0 +1,44 @@
+{
+  "name": "commumed",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "generate-embeddings": "tsx scripts/generate-embeddings.ts",
+    "ocr-full-pdf": "tsx scripts/ocr-full-pdf.ts",
+    "generate-embeddings-from-text": "tsx scripts/generate-embeddings-from-text.ts",
+    "ocr-pdf": "tsx scripts/ocr-pdf.ts",
+    "split-pdf": "tsx scripts/split-pdf.ts",
+    "add-text-chunk": "tsx scripts/add-text-chunk.ts",
+    "test-query": "tsx scripts/test-query.ts",
+    "upload-embeddings": "tsx scripts/upload-embeddings-to-vercel.ts"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.0.0",
+    "ai": "^3.4.0",
+    "fuse.js": "^7.0.0",
+    "lucide-react": "^0.427.0",
+    "next": "14.2.5",
+    "pdf-parse": "^1.1.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-markdown": "^10.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.12",
+    "@types/pdf-parse": "^1.1.4",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.5",
+    "postcss": "^8.4.40",
+    "tailwindcss": "^3.4.7",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.5.4"
+  }
+}
