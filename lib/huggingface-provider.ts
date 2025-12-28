@@ -8,7 +8,7 @@ export interface HuggingFaceConfig {
 
 // Default to Space API, fallback to Inference API
 const DEFAULT_SPACE_URL = process.env.HUGGINGFACE_SPACE_URL || '';
-const DEFAULT_INFERENCE_URL = 'https://api-inference.huggingface.co';
+const DEFAULT_INFERENCE_URL = 'https://router.huggingface.co';
 
 // Generate embeddings using Hugging Face Space API or Inference API
 export async function generateEmbedding(
@@ -59,7 +59,7 @@ export async function generateEmbedding(
     }
   }
 
-  // Fallback to Inference API
+  // Fallback to Inference API (using new router endpoint)
   try {
     const response = await fetch(`${DEFAULT_INFERENCE_URL}/models/${model}`, {
       method: 'POST',
