@@ -61,15 +61,17 @@ export async function generateEmbedding(
 
   // Fallback to Inference API (using new router endpoint)
   try {
-    // For sentence-transformers models, use 'sentences' parameter
-    // For feature extraction models, use 'inputs' parameter
+    // Router endpoint always requires 'inputs' key
+    // For sentence-transformers models, inputs should be an array of strings
+    // For feature extraction models, inputs can be a string or array
     const isSentenceTransformer = model.includes('sentence-transformers') || 
                                    model.includes('all-MiniLM') ||
                                    model.includes('paraphrase');
     
-    const requestBody = isSentenceTransformer
-      ? { sentences: [text] }  // Sentence similarity models expect 'sentences'
-      : { inputs: text };        // Feature extraction models expect 'inputs'
+    // Router endpoint requires 'inputs' key, but value format depends on model
+    const requestBody = {
+      inputs: isSentenceTransformer ? [text] : text
+    };
     
     const response = await fetch(`${DEFAULT_INFERENCE_URL}/models/${model}`, {
       method: 'POST',
