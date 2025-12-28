@@ -371,7 +371,7 @@ IMPORTANT: Your response must be based EXCLUSIVELY on the documentation above. E
         }
       }
       // Embedding errors
-      else if (errorMsg.includes('embedding') {
+      else if (errorMsg.includes('embedding')) {
         errorMessage = `Error generating embedding: ${error.message}. Check HUGGINGFACE_SPACE_URL and model configuration.`;
       }
       // Embeddings loading errors
