@@ -203,7 +203,7 @@ export async function* streamChatResponse(
   prompt += 'Assistant:';
 
   try {
-    const response = await fetch(`${DEFAULT_INFERENCE_URL}/models/${model}`, {
+    const response = await fetch(`${ROUTER_INFERENCE_URL}/models/${model}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -255,7 +255,7 @@ export async function checkModelStatus(
   config?: HuggingFaceConfig
 ): Promise<{ loading: boolean; error?: string }> {
   const apiKey = config?.apiKey || process.env.HUGGINGFACE_API_KEY || '';
-  const baseURL = DEFAULT_INFERENCE_URL;
+  const baseURL = ROUTER_INFERENCE_URL;
 
   try {
     const response = await fetch(`${baseURL}/models/${model}`, {
