@@ -12,9 +12,10 @@ const DEFAULT_SPACE_URL = process.env.HUGGINGFACE_SPACE_URL || '';
 const ROUTER_INFERENCE_URL = 'https://router.huggingface.co/hf-inference';
 
 // Generate embeddings using Hugging Face Space API or Inference API
+// Default to feature extraction model that works with router endpoint
 export async function generateEmbedding(
   text: string,
-  model: string = 'sentence-transformers/all-MiniLM-L6-v2',
+  model: string = 'intfloat/e5-small-v2', // Feature extraction model compatible with router endpoint
   config?: HuggingFaceConfig
 ): Promise<number[]> {
   const spaceURL = config?.spaceURL || process.env.HUGGINGFACE_SPACE_URL || '';
@@ -62,16 +63,13 @@ export async function generateEmbedding(
 
   // Fallback to Inference API (router endpoint only - direct endpoint is deprecated)
   // Router endpoint requires 'inputs' key for all models
-  // For sentence-transformers, try using feature extraction format
+  // Use feature extraction format: inputs as string (works with e5 models and similar)
   try {
-    // Use router endpoint for all models
-    // Try feature extraction format: inputs as string or array
     const apiUrl = `${ROUTER_INFERENCE_URL}/models/${model}`;
     
-    // Try array format first (works for some sentence-transformers models)
-    // If that fails, we'll need to use a different model
+    // Feature extraction models use 'inputs' as string
     const requestBody = {
-      inputs: [text]  // Array format for feature extraction
+      inputs: text  // String format for feature extraction models
     };
     
     const response = await fetch(apiUrl, {

@@ -83,7 +83,7 @@ export async function generateEmbedding(
     const { generateEmbedding: hfGenerateEmbedding } = await import('./huggingface-provider');
     return hfGenerateEmbedding(
       text,
-      config?.model || process.env.HUGGINGFACE_EMBEDDING_MODEL || 'sentence-transformers/all-MiniLM-L6-v2',
+      config?.model || process.env.HUGGINGFACE_EMBEDDING_MODEL || 'intfloat/e5-small-v2',
       { 
         spaceURL: process.env.HUGGINGFACE_SPACE_URL,
         apiKey: config?.apiKey || process.env.HUGGINGFACE_API_KEY,
